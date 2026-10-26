@@ -403,7 +403,7 @@
     if (ok) correct++;
 
     var fb = $('feedback');
-    $('fword').textContent = ok ? '맞다' : '틀리다';
+    $('fword').textContent = ok ? '정답입니다.' : '오답입니다.';
     $('fnote').textContent = (choice === null) ? '시간 초과' : '';
     fb.classList.remove('ok', 'no');
     fb.classList.add('show', ok ? 'ok' : 'no');
