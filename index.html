@@ -210,6 +210,17 @@
   }
   .btn-sub:hover { border-color: var(--accent); background: rgba(110,168,255,.08); }
 
+  main { padding-bottom: 64px; }
+  .site-footer {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+    padding: 14px 16px;
+    text-align: center;
+    font-size: 13px; letter-spacing: .08em;
+    color: var(--muted);
+    background: linear-gradient(to top, rgba(7, 11, 22, 0.92), rgba(7, 11, 22, 0));
+    pointer-events: none;
+  }
+
   @media (max-width: 560px) {
     .card { padding: 28px 20px 26px; border-radius: 20px; }
     .choice { padding: 16px 4px 12px; }
@@ -287,6 +298,8 @@
 
   </div>
 </main>
+
+<footer class="site-footer">2026 진로심화프로그램 과학철학 신현우 T</footer>
 
 <script>
 (function () {
