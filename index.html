@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>과학적인가? · 과학철학 OX 퀴즈</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #070b16;
+    --bg2: #0d1426;
+    --card: rgba(18, 26, 46, 0.72);
+    --line: rgba(140, 170, 255, 0.18);
+    --text: #e8edf8;
+    --muted: #8d9bb8;
+    --accent: #6ea8ff;
+    --accent2: #a58bff;
+    --good: #3ddc97;
+    --bad: #ff5d73;
+    --warn: #ffb454;
+    --sci: #5ec8ff;
+    --non: #ff8a7a;
+    --unk: #c7b3ff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Noto Sans KR', system-ui, sans-serif;
+    color: var(--text);
+    background: radial-gradient(1200px 700px at 20% -10%, #14214a 0%, transparent 60%),
+                radial-gradient(900px 600px at 110% 110%, #26174d 0%, transparent 55%),
+                var(--bg);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  #bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  main {
+    position: relative; z-index: 1;
+    min-height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px 16px;
+  }
+  .card {
+    width: 100%; max-width: 760px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255,255,255,0.05);
+    padding: 40px 40px 36px;
+    position: relative;
+    overflow: hidden;
+  }
+  .screen { display: none; animation: rise .5s ease both; }
+  .screen.active { display: block; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; letter-spacing: .22em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  h1 {
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 700;
+    font-size: clamp(34px, 7vw, 56px);
+    line-height: 1.2;
+    margin: 14px 0 12px;
+    background: linear-gradient(120deg, #fff 10%, var(--accent) 55%, var(--accent2) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .sub { color: var(--muted); font-size: 16px; line-height: 1.7; }
+
+  .rule {
+    margin: 28px 0 24px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 20px 22px;
+    background: rgba(255,255,255,0.02);
+  }
+  .rule p.key {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 18px; line-height: 1.65;
+  }
+  .rule p.key b { color: var(--accent); font-weight: 700; }
+  .legend { display: grid; gap: 10px; margin-top: 16px; }
+  .legend div { display: flex; align-items: center; gap: 12px; font-size: 15px; color: var(--muted); }
+  .dot {
+    width: 30px; height: 30px; border-radius: 9px; flex: none;
+    display: grid; place-items: center;
+    font-weight: 700; font-size: 15px;
+  }
+  .dot.s { background: rgba(94,200,255,.14); color: var(--sci); border: 1px solid rgba(94,200,255,.4); }
+  .dot.n { background: rgba(255,138,122,.14); color: var(--non); border: 1px solid rgba(255,138,122,.4); }
+  .dot.u { background: rgba(199,179,255,.14); color: var(--unk); border: 1px solid rgba(199,179,255,.4); }
+  .meta { display: flex; gap: 20px; flex-wrap: wrap; color: var(--muted); font-size: 14px; margin-bottom: 22px; }
+  .meta span::before { content: '◆'; color: var(--accent2); margin-right: 8px; font-size: 9px; vertical-align: middle; }
+
+  .name-row { display: flex; gap: 10px; align-items: center; margin-bottom: 18px; }
+  .name-row label { color: var(--muted); font-size: 14px; white-space: nowrap; }
+  .name-row input {
+    flex: 1; min-width: 0;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--line);
+    color: var(--text);
+    padding: 12px 14px; border-radius: 12px;
+    font: inherit; font-size: 15px; outline: none;
+  }
+  .name-row input:focus { border-color: var(--accent); }
+
+  .btn-main {
+    width: 100%;
+    padding: 17px; border: 0; border-radius: 14px; cursor: pointer;
+    font: inherit; font-size: 17px; font-weight: 700; color: #06101f;
+    background: linear-gradient(120deg, var(--accent), var(--accent2));
+    transition: transform .15s ease, box-shadow .2s ease;
+    box-shadow: 0 10px 30px rgba(110,168,255,.28);
+  }
+  .btn-main:hover { transform: translateY(-2px); box-shadow: 0 14px 36px rgba(110,168,255,.4); }
+  .btn-main:active { transform: translateY(0); }
+
+  /* Quiz */
+  .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .counter { font-family: 'JetBrains Mono', monospace; font-size: 15px; color: var(--muted); }
+  .counter b { color: var(--text); font-size: 20px; }
+  .timer-num {
+    font-family: 'JetBrains Mono', monospace; font-weight: 700;
+    font-size: 30px; color: var(--accent);
+    min-width: 2ch; text-align: right; transition: color .3s;
+  }
+  .timer-num small { font-size: 14px; color: var(--muted); font-weight: 500; margin-left: 2px; }
+  .bar { height: 8px; border-radius: 8px; background: rgba(255,255,255,0.07); overflow: hidden; }
+  .bar i {
+    display: block; height: 100%; width: 100%;
+    border-radius: 8px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transform-origin: left center;
+  }
+  .danger .timer-num { color: var(--bad); animation: pulse .6s ease-in-out infinite; }
+  .danger .bar i { background: linear-gradient(90deg, var(--warn), var(--bad)); }
+  @keyframes pulse { 50% { transform: scale(1.12); } }
+
+  .qwrap { margin: 34px 0 30px; min-height: 150px; display: flex; flex-direction: column; justify-content: center; }
+  .qlabel { font-size: 14px; color: var(--accent2); margin-bottom: 14px; font-weight: 500; }
+  .qtext {
+    font-family: 'Noto Serif KR', serif; font-weight: 500;
+    font-size: clamp(22px, 4.2vw, 30px); line-height: 1.6;
+    word-break: keep-all;
+  }
+  .choices { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .choice {
+    position: relative;
+    padding: 20px 8px 16px; border-radius: 16px; cursor: pointer;
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,0.03);
+    color: var(--text); font: inherit;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    transition: transform .15s ease, border-color .2s, background .2s;
+  }
+  .choice .sym { font-family: 'JetBrains Mono', monospace; font-size: 34px; font-weight: 700; line-height: 1; }
+  .choice .lab { font-size: 15px; font-weight: 500; }
+  .choice .key { position: absolute; top: 8px; right: 10px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); opacity: .7; }
+  .choice[data-v="S"] .sym { color: var(--sci); }
+  .choice[data-v="N"] .sym { color: var(--non); }
+  .choice[data-v="U"] .sym { color: var(--unk); }
+  .choice:hover:not(:disabled) { transform: translateY(-3px); background: rgba(255,255,255,0.07); }
+  .choice[data-v="S"]:hover:not(:disabled) { border-color: var(--sci); }
+  .choice[data-v="N"]:hover:not(:disabled) { border-color: var(--non); }
+  .choice[data-v="U"]:hover:not(:disabled) { border-color: var(--unk); }
+  .choice:disabled { cursor: default; }
+  .choice.picked { transform: scale(0.97); border-color: var(--text); background: rgba(255,255,255,0.1); }
+  .choice:disabled:not(.picked) { opacity: .35; }
+
+  .feedback {
+    position: absolute; inset: 0; z-index: 5;
+    display: none; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+    background: rgba(7, 11, 22, 0.78);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  }
+  .feedback.show { display: flex; animation: pop .28s ease both; }
+  @keyframes pop { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: none; } }
+  .feedback .word {
+    font-family: 'Noto Serif KR', serif; font-weight: 700;
+    font-size: clamp(60px, 14vw, 104px); line-height: 1.1;
+  }
+  .feedback.ok .word { color: var(--good); text-shadow: 0 0 40px rgba(61,220,151,.5); }
+  .feedback.no .word { color: var(--bad); text-shadow: 0 0 40px rgba(255,93,115,.5); }
+  .feedback .note { color: var(--muted); font-size: 15px; height: 20px; }
+
+  /* Result */
+  .result { text-align: center; }
+  .result .who { color: var(--muted); font-size: 16px; margin-top: 8px; min-height: 22px; }
+  .score {
+    font-family: 'JetBrains Mono', monospace; font-weight: 700;
+    font-size: clamp(110px, 28vw, 210px); line-height: 1;
+    margin: 18px 0 4px;
+    background: linear-gradient(120deg, #fff 0%, var(--accent) 50%, var(--accent2) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 0 40px rgba(110,168,255,.35));
+  }
+  .score small { font-size: .32em; color: var(--muted); -webkit-text-fill-color: var(--muted); margin-left: .1em; }
+  .pct { font-family: 'JetBrains Mono', monospace; color: var(--muted); font-size: 18px; margin-bottom: 30px; }
+  .btn-sub {
+    padding: 14px 28px; border-radius: 14px; cursor: pointer;
+    background: transparent; border: 1px solid var(--line); color: var(--text);
+    font: inherit; font-size: 15px; transition: border-color .2s, background .2s;
+  }
+  .btn-sub:hover { border-color: var(--accent); background: rgba(110,168,255,.08); }
+
+  @media (max-width: 560px) {
+    .card { padding: 28px 20px 26px; border-radius: 20px; }
+    .choice { padding: 16px 4px 12px; }
+    .choice .sym { font-size: 28px; }
+    .choice .key { display: none; }
+    .qwrap { min-height: 170px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+
+<main>
+  <div class="card" id="card">
+
+    <!-- 시작 -->
+    <section class="screen active" id="s-start">
+      <div class="eyebrow">Philosophy of Science</div>
+      <h1>과학적인가?</h1>
+      <p class="sub">20개의 주장이 차례로 나타납니다.<br>각 주장이 어디에 속하는지 판단해 보세요.</p>
+
+      <div class="rule">
+        <p class="key">주장이 <b>맞는지 틀린지</b>가 아니라,<br>그 주장이 <b>과학적인 방식으로 다뤄지는지</b>를 판단합니다.</p>
+        <div class="legend">
+          <div><span class="dot s">O</span>과학적 : 증거로 확인하거나 틀렸음을 보일 수 있다</div>
+          <div><span class="dot n">X</span>비과학적 : 증거로 확인하거나 반박할 방법이 없다</div>
+          <div><span class="dot u">△</span>판단불가 : 기준에 따라 의견이 갈린다</div>
+        </div>
+      </div>
+
+      <div class="meta"><span>총 20문제</span><span>문제당 15초</span><span>시간이 지나면 오답</span></div>
+
+      <div class="name-row">
+        <label for="name">이름 (선택)</label>
+        <input id="name" type="text" maxlength="20" placeholder="결과 화면에 표시됩니다" autocomplete="off">
+      </div>
+      <button class="btn-main" id="startBtn">시작하기</button>
+    </section>
+
+    <!-- 퀴즈 -->
+    <section class="screen" id="s-quiz">
+      <div id="quizTop">
+        <div class="top">
+          <div class="counter">QUESTION <b id="qn">1</b> / 20</div>
+          <div class="timer-num"><span id="tnum">15</span><small>초</small></div>
+        </div>
+        <div class="bar"><i id="tbar"></i></div>
+      </div>
+
+      <div class="qwrap">
+        <div class="qlabel">이 주장은 과학적인가?</div>
+        <div class="qtext" id="qtext"></div>
+      </div>
+
+      <div class="choices" id="choices">
+        <button class="choice" data-v="S"><span class="key">1</span><span class="sym">O</span><span class="lab">과학적</span></button>
+        <button class="choice" data-v="U"><span class="key">2</span><span class="sym">△</span><span class="lab">판단불가</span></button>
+        <button class="choice" data-v="N"><span class="key">3</span><span class="sym">X</span><span class="lab">비과학적</span></button>
+      </div>
+
+      <div class="feedback" id="feedback"><div class="word" id="fword"></div><div class="note" id="fnote"></div></div>
+    </section>
+
+    <!-- 결과 -->
+    <section class="screen result" id="s-result">
+      <div class="eyebrow">Result</div>
+      <div class="who" id="who"></div>
+      <div class="score"><span id="scoreNum">0</span><small>/ 20</small></div>
+      <div class="pct" id="pct"></div>
+      <button class="btn-sub" id="retryBtn">처음으로</button>
+    </section>
+
+  </div>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  var TIME_LIMIT = 15;      // 문제당 제한 시간(초)
+  var FEEDBACK_MS = 1100;   // 정답 표시 시간(ms)
+
+  // S = 과학적(O), N = 비과학적(X), U = 판단불가(△)
+  var QUESTIONS = [
+    // 과학적인 주장 10
+    { q: '무거운 물체가 가벼운 물체보다 더 빨리 떨어진다.', a: 'S' },
+    { q: '비누로 손을 씻으면 감염병 전파가 줄어든다.', a: 'S' },
+    { q: '개구리를 만지면 손에 사마귀가 생긴다.', a: 'S' },
+    { q: '비타민 C를 먹으면 감기에 걸리지 않는다.', a: 'S' },
+    { q: '껌을 삼키면 7년 동안 소화되지 않고 위에 남는다.', a: 'S' },
+    { q: '혈액형이 A형인 사람은 O형인 사람보다 성격이 더 꼼꼼하다.', a: 'S' },
+    { q: '달은 해마다 지구에서 조금씩 멀어지고 있다.', a: 'S' },
+    { q: '소리는 진공에서 전달되지 않는다.', a: 'S' },
+    { q: '스마트폰 화면 밝기를 높이면 배터리가 더 빨리 닳는다.', a: 'S' },
+    { q: '아침을 먹는 학생이 안 먹는 학생보다 1교시 집중력 검사 점수가 높다.', a: 'S' },
+    // 비과학적인 주장 6
+    { q: '행운의 펜을 쓰면 시험을 잘 보고, 못 보면 그날은 펜의 힘이 약했던 것이다.', a: 'N' },
+    { q: '돼지꿈을 꾸면 복권에 당첨된다. 당첨되지 않았다면 진짜 돼지꿈이 아니었던 것이다.', a: 'N' },
+    { q: '내 방에는 투명한 용이 산다. 소리도, 냄새도, 열도 없고 만져지지도 않는다.', a: 'N' },
+    { q: '이 부적을 지니면 나쁜 일이 생기지 않는다. 나쁜 일이 생겼다면 믿음이 부족해서다.', a: 'N' },
+    { q: '인기 아이돌이 쓴다고 했으니 이 화장품이 피부에 가장 좋다.', a: 'N' },
+    { q: '세상은 5분 전에 우리의 모든 기억까지 포함해서 만들어졌다.', a: 'N' },
+    // 판단불가 4
+    { q: '우리 우주 말고도 수많은 다른 우주가 존재한다.', a: 'U' },
+    { q: '인간에게는 자유의지가 있다.', a: 'U' },
+    { q: '인공지능도 의식을 가질 수 있다.', a: 'U' },
+    { q: '수학은 과학이다.', a: 'U' }
+  ];
+
+  var $ = function (id) { return document.getElementById(id); };
+  var screens = { start: $('s-start'), quiz: $('s-quiz'), result: $('s-result') };
+  var quizTop = $('quizTop');
+  var choiceBtns = Array.prototype.slice.call(document.querySelectorAll('.choice'));
+
+  var order = [], idx = 0, correct = 0, locked = true, startTs = 0, raf = 0, timeoutId = 0, studentName = '';
+
+  function show(name) {
+    Object.keys(screens).forEach(function (k) { screens[k].classList.toggle('active', k === name); });
+  }
+
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function startGame() {
+    studentName = $('name').value.trim();
+    order = shuffle(QUESTIONS);
+    idx = 0; correct = 0;
+    show('quiz');
+    nextQuestion();
+  }
+
+  function nextQuestion() {
+    if (idx >= order.length) return finish();
+    $('feedback').classList.remove('show', 'ok', 'no');
+    $('qn').textContent = idx + 1;
+    $('qtext').textContent = order[idx].q;
+    choiceBtns.forEach(function (b) { b.disabled = false; b.classList.remove('picked'); });
+    quizTop.classList.remove('danger');
+    $('tnum').textContent = TIME_LIMIT;
+    $('tbar').style.transform = 'scaleX(1)';
+    locked = false;
+    startTs = performance.now();
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(tick);
+  }
+
+  function tick(now) {
+    if (locked) return;
+    var left = TIME_LIMIT - (now - startTs) / 1000;
+    if (left <= 0) {
+      $('tbar').style.transform = 'scaleX(0)';
+      $('tnum').textContent = 0;
+      return answer(null);
+    }
+    $('tbar').style.transform = 'scaleX(' + (left / TIME_LIMIT) + ')';
+    $('tnum').textContent = Math.ceil(left);
+    quizTop.classList.toggle('danger', left <= 5);
+    raf = requestAnimationFrame(tick);
+  }
+
+  function answer(choice, btn) {
+    if (locked) return;
+    locked = true;
+    cancelAnimationFrame(raf);
+    choiceBtns.forEach(function (b) { b.disabled = true; });
+    if (btn) btn.classList.add('picked');
+
+    var ok = choice !== null && choice === order[idx].a;
+    if (ok) correct++;
+
+    var fb = $('feedback');
+    $('fword').textContent = ok ? '맞다' : '틀리다';
+    $('fnote').textContent = (choice === null) ? '시간 초과' : '';
+    fb.classList.remove('ok', 'no');
+    fb.classList.add('show', ok ? 'ok' : 'no');
+
+    timeoutId = setTimeout(function () { idx++; nextQuestion(); }, FEEDBACK_MS);
+  }
+
+  function finish() {
+    $('feedback').classList.remove('show', 'ok', 'no');
+    $('scoreNum').textContent = correct;
+    $('pct').textContent = Math.round(correct / order.length * 100) + '%';
+    $('who').textContent = studentName ? studentName : '';
+    show('result');
+  }
+
+  function reset() {
+    clearTimeout(timeoutId);
+    cancelAnimationFrame(raf);
+    locked = true;
+    $('name').value = '';
+    show('start');
+  }
+
+  // 이벤트
+  $('startBtn').addEventListener('click', startGame);
+  $('retryBtn').addEventListener('click', reset);
+  choiceBtns.forEach(function (b) {
+    b.addEventListener('click', function () { answer(b.getAttribute('data-v'), b); });
+  });
+  document.addEventListener('keydown', function (e) {
+    if (!screens.quiz.classList.contains('active') || locked) return;
+    var map = { '1': 'S', '2': 'U', '3': 'N' };
+    if (map[e.key]) {
+      var btn = choiceBtns.filter(function (b) { return b.getAttribute('data-v') === map[e.key]; })[0];
+      answer(map[e.key], btn);
+    }
+  });
+  $('name').addEventListener('keydown', function (e) { if (e.key === 'Enter') startGame(); });
+
+  // ---------- 배경: 천천히 움직이는 별자리 네트워크 ----------
+  var cv = $('bg'), ctx = cv.getContext('2d'), nodes = [], W, H;
+  var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function resize() {
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    cv.width = W * dpr; cv.height = H * dpr;
+    cv.style.width = W + 'px'; cv.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var n = Math.max(30, Math.min(90, Math.floor(W * H / 16000)));
+    nodes = [];
+    for (var i = 0; i < n; i++) {
+      nodes.push({ x: Math.random() * W, y: Math.random() * H,
+                   vx: (Math.random() - .5) * .22, vy: (Math.random() - .5) * .22,
+                   r: Math.random() * 1.4 + .5 });
+    }
+  }
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    var i, j, a, b, dx, dy, d;
+    for (i = 0; i < nodes.length; i++) {
+      a = nodes[i];
+      if (!still) {
+        a.x += a.vx; a.y += a.vy;
+        if (a.x < 0 || a.x > W) a.vx *= -1;
+        if (a.y < 0 || a.y > H) a.vy *= -1;
+      }
+      for (j = i + 1; j < nodes.length; j++) {
+        b = nodes[j]; dx = a.x - b.x; dy = a.y - b.y; d = Math.sqrt(dx * dx + dy * dy);
+        if (d < 130) {
+          ctx.strokeStyle = 'rgba(130,170,255,' + (0.16 * (1 - d / 130)) + ')';
+          ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+        }
+      }
+      ctx.fillStyle = 'rgba(190,210,255,0.65)';
+      ctx.beginPath(); ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2); ctx.fill();
+    }
+    if (!still) requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize', function () { resize(); if (still) draw(); });
+  resize(); draw();
+})();
+</script>
+</body>
+</html>
